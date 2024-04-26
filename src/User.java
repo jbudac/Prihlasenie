@@ -17,7 +17,17 @@ public class User {
     public int id;
     public char gender;
     public Date datumNarodenia;
-    public Date datumPoslednehoPrihlasenia;
+    public Date datumPoslednehoPrihlasenia=null;
+
+    public StatusCode getCode() {
+        return code;
+    }
+
+    public void setCode(StatusCode code) {
+        this.code = code;
+    }
+
+    public StatusCode code;
 
     public String getMeno() {
         return meno;
@@ -109,7 +119,7 @@ public class User {
 //vytvorit potrebne parametre pre uzivatela a vygenerovat gettere a settre
 
     public String prezentujSa(){
-        return this.meno+this.getPriezvisko()+this.stat+this.datumPoslednehoPrihlasenia.toString();
+        return this.meno+" "+this.getPriezvisko()+" "+this.mesto+" "+this.stat;//+this.datumPoslednehoPrihlasenia.toString();
         //vrati String meno, priezvisko, email,datum narodenia,mesta,stat, telefon, posledne prihlasenie
         //POZOR vrati, nie vypisuje.
     }

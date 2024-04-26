@@ -1,3 +1,4 @@
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -100,18 +101,89 @@ public class UserService {
         try {
             reader = new BufferedReader(new FileReader(filePath));
             String line = reader.readLine();
+            line = reader.readLine();
             while (line != null) {
-                String []lineArray=line.split(",");
+                String [] riadok=line.split(",");
                 //oprogramovat nacitanie suboru a vlozit objekty uzivatela do userListu
                 //to iste co pri poli, ale zo suboru.
                 // citanie dalsieho riadku
                 User user=new User();
+
                 this.userList.add(user);
                 line = reader.readLine();
             }
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public List<User> filterByStatusCode(StatusCode filterCode){
+        List<User> filterList=new ArrayList<>();
+        for (User user :userList){
+            if(user.getCode().equals(filterCode.code)){
+                filterList.add(user);
+            }
+        }
+        return filterList;
+    }
+
+    public String loadJson(String fileUrl){
+        String jsonData="";
+        try {
+            // URL, ze které chceme načíst JSON data
+            //String urlString = "http://example.com/data.json";
+            URL url = new URL(fileUrl);
+
+            // Otevření spojení a načtení dat
+            InputStream inputStream = url.openStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder jsonStringBuilder = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                jsonStringBuilder.append(line);
+            }
+
+            // Uzavření spojení
+            reader.close();
+            inputStream.close();
+
+            // Získání JSON dat jako řetězec
+            jsonData = jsonStringBuilder.toString();
+
+            // Zpracování JSON dat
+            // Zde byste měli použít knihovnu pro zpracování JSON, například org.json.JSONObject
+            // nebo com.google.gson.Gson
+            // Zde je příklad s org.json.JSONObject:
+
+            // JSONObject jsonObject = new JSONObject(jsonData);
+            // ... pracujte s jsonObject dál ...
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return jsonData;
+    }
+    public void parseJson(String jsonString){
+        JSONArray jsonArray = new JSONArray(jsonString);
+
+        // Procházení jednotlivých uživatelů v poli
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject userObject = jsonArray.getJSONObject(i);
+
+            // Získání atributů uživatele (id, name, age)
+            User user=new User();
+            user.setId(userObject.getInt("Index"));
+           user.setMeno(userObject.getString("FirstName"));
+           user.setPriezvisko(userObject.getString("LastName"));
+           user.setHeslo(userObject.getString("Password"));
+            user.setEmail(userObject.getString("Email"));
+            user.setMesto(userObject.getString("City"));
+            user.setStat(userObject.getString("Country"));
+            // Zpracování informací o uživateli
+            this.userList.add(user);
+          //  System.out.println("User " + id + ": " + name + ", Priezvisko: " + age);
         }
     }
 
@@ -139,6 +211,20 @@ public class UserService {
         }
 
         return jsonFile;
+    }
+
+    public List<User> filter(String filterString){
+        List<User> filterUserList=new ArrayList<>();
+        for(User user: userList){
+            if(user.getPriezvisko().indexOf(filterString)>=0 || user.getEmail().indexOf(filterString)>=0){
+                filterUserList.add(user);
+            }
+        }
+        return filterUserList;
+    }
+
+    public User zrebuj(){
+        return this.userList.get((int)(Math.random()*this.userList.size()));
     }
 
 }
